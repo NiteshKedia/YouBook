@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Login with Social Buttons Template | PrepBootstrap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css" />
+
+    <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div id="fb-root"></div>
+	<script>
+		// Additional JS functions here
+		window.fbAsyncInit = function() {
+			FB.init({
+				appId      : '543998305722370', // App ID
+				version    : 'v2.0',
+				status     : true, // check login status
+				cookie     : true, // enable cookies to allow the server to access the session
+				xfbml      : true,  // parse XFBML
+				oauth      : true
+			});
+
+			// Additional init code here
+
+		};
+
+		// Load the SDK asynchronously
+		(function(d){
+			 var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+			 if (d.getElementById(id)) {return;}
+			 js = d.createElement('script'); js.id = id; js.async = true;
+			 js.src = "//connect.facebook.net/en_US/sdk.js";
+			 ref.parentNode.insertBefore(js, ref);
+		 }(document));
+	</script>
+<div class="container">
+
+<div class="page-header">
+    <h1>Login with Social Buttons <small>Bootstrap template, demonstrating a sample login page with social buttons</small></h1>
+</div>
+
+<!-- Login with Social Buttons - START -->
+<form class="col-md-12">
+    <div class="row text-center">
+        <div class="col-md-4 col-sm-12">
+            <button type="button" class="facebook_connect btn btn-primary btn-block">Facebook</button>
+        </div>
+        <div class="col-md-4 col-sm-12">
+            <button type="button" class="btn btn-info btn-block">Twitter</button>
+        </div>
+        <div class="col-md-4 col-sm-12">
+            <button type="button" class="btn btn-danger btn-block">Google+</button>
+        </div>
+    </div>
+    <hr />
+    <div class="form-group">
+        <input type="text" class="form-control input-lg" placeholder="Email">
+    </div>
+    <div class="form-group">
+        <input type="password" class="form-control input-lg" placeholder="Password">
+    </div>
+    <div class="form-group">
+        <input type="password" class="form-control input-lg" placeholder="Confirm Password">
+    </div>
+    <div class="form-group">
+        <button class="btn btn-primary btn-lg btn-block">Sign In</button>
+    </div>
+</form>
+
+<!-- Login with Social Buttons - END -->
+
+</div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1632797926818767"
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+		<script type="text/javascript">
+	var ajaxurl = 'http://azeverything.com/wp-admin/admin-ajax.php';
+	jQuery('.facebook_connect').click(function(){
+			var context = jQuery(this).closest("form");
+			if (jQuery(".tos_register", context).length > 0)
+			{
+				if (! jQuery(".tos_register", context).is(":checked"))
+				{
+					alert('You must agree with the terms and conditions.');
+					return false;
+				}
+			}		
+			
+		FB.login(function(FB_response){
+			if( FB_response.status === 'connected' ){
+				fb_intialize(FB_response);
+			}
+		},
+		{scope: 'public_profile,email'});
+	});
+
+	function fb_intialize(FB_response){
+		FB.api( '/me', 'GET', 
+						{'fields':'id,email,verified,name'},
+						function(FB_userdata){
+							jQuery.ajax({
+									type: 'POST',
+									url: ajaxurl,
+									data: {"action": "fb_intialize", "FB_userdata": FB_userdata, "FB_response": FB_response},
+									success: function(user){
+										if( user.error ){
+											alert( user.error );
+										}
+										else if( user.loggedin ){
+											if( user.type === 'login' )
+											{
+												window.location.reload();
+											}
+											else if( user.type === 'register' )
+											{
+												window.location = user.url;
+											}
+										}
+									}
+							});
+						}
+		);
+	};
+	</script>
+    <script type="text/javascript">
+    jQuery(document).ready(function(){
+        if (window.devicePixelRatio > 1) {
+            var image = jQuery("#logo_img");
+            imageName = 'http://azeverything.com/wp-content/uploads/2014/05/2014AZEverythingLogoWhite.png';
+            //rename image
+            image.attr('src', imageName);
+        }
+    });
+    </script>
+<script type="text/javascript">
+/* Lost password ajax */
+jQuery(document).ready(function(){
+    jQuery("#forgot_form #recover").on("click",function(){
+        jQuery.ajax({
+               url: ajaxurl,
+               type: 'POST',
+               data: {
+                       action: 'kleo_lost_password',
+                       email: jQuery("#forgot-email").val(),
+               },
+               success: function(data){
+                       jQuery('#lost_result').html("<p>"+data+"</p>");
+               },
+               error: function() {
+                       jQuery('#lost_result').html('Sorry, an error occurred.').css('color', 'red');
+               }
+
+        });
+        return false;
+	});
+});
+</script>
+
+</body>
+</html>
